@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>EREN TARIM</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#f0f4f0;color:#1a2e1a;min-height:100vh}
+:root{--g:#1a5e1a;--lg:#e8f5e9;--bd:#c8e6c9;--ac:#f57f17;--rd:#c62828;--gr:#607060}
+nav{background:var(--g);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px #0003}
+.nlogo{font-weight:700;font-size:1.1rem}
+.ntabs{display:flex;gap:6px}
+.ntab{background:transparent;border:1.5px solid #fff5;color:#fff;padding:6px 18px;border-radius:20px;cursor:pointer;font-size:.9rem}
+.ntab.active,.ntab:hover{background:#fff;color:var(--g);font-weight:600}
+.page{display:none;padding:24px;max-width:900px;margin:0 auto}
+.page.active{display:block}
+.steps{display:flex;gap:0;margin-bottom:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px #0001}
+.step-btn{flex:1;padding:10px 4px;background:#e8f5e9;border:none;cursor:pointer;font-size:.75rem;font-weight:600;color:var(--gr);border-right:1px solid var(--bd);transition:.2s;text-align:center;line-height:1.3}
+.step-btn:last-child{border-right:none}
+.step-btn.active{background:var(--g);color:#fff}
+.step-btn.done{background:#a5d6a7;color:#1b5e20}
+.step-panel{display:none}
+.step-panel.active{display:block}
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 12px #0001;padding:24px;margin-bottom:20px;border:1px solid var(--bd)}
+.card h2{color:var(--g);margin-bottom:16px;font-size:1.05rem;border-bottom:2px solid var(--lg);padding-bottom:8px}
+label{display:block;font-size:.82rem;font-weight:600;color:var(--gr);margin-bottom:4px;margin-top:10px}
+input,select{width:100%;padding:9px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:.95rem;outline:none;background:#fafff9}
+input:focus,select:focus{border-color:var(--g)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.btn{padding:9px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem;transition:.15s}
+.bg2{background:var(--g);color:#fff}
+.bac{background:var(--ac);color:#fff}
+.brd{background:var(--rd);color:#fff}
+.bgr{background:#e0e0e0;color:#333}
+.bsm{padding:5px 12px;font-size:.8rem}
+.brow{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.nav-row{display:flex;justify-content:space-between;margin-top:20px}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--lg);color:var(--g);padding:8px 10px;text-align:left;font-weight:700}
+td{padding:7px 10px;border-bottom:1px solid #e8f5e9;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.al{padding:10px 16px;border-radius:8px;font-size:.88rem;margin-top:10px}
+.aok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}
+.aer{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
+.ain{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9}
+.divider{height:1px;background:var(--bd);margin:18px 0}
+.banner{background:linear-gradient(135deg,var(--g),#0d3d0d);color:#fff;border-radius:12px;padding:16px 24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.banner h1{font-size:1.3rem}
+.prod-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--bd);border-radius:10px;margin-bottom:8px;cursor:pointer;background:#fafff9;transition:.15s}
+.prod-row:hover{border-color:var(--g);background:var(--lg)}
+.prod-row.sel{border-color:var(--g);background:var(--lg)}
+.prod-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;font-size:13px;transition:.15s}
+.prod-row.sel .prod-check{background:var(--g);border-color:var(--g);color:#fff}
+.prod-info{flex:1}
+.prod-name{font-weight:700;color:#1a2e1a;font-size:.95rem}
+.prod-meta{font-size:.78rem;color:var(--gr);margin-top:2px}
+.prod-price{font-weight:800;color:var(--g);font-size:1rem;text-align:right}
+.prod-price-sub{font-size:.75rem;color:var(--gr);text-align:right}
+.cfg-card{border:1.5px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:14px;background:#fafff9}
+.cfg-title{font-weight:700;color:var(--g);margin-bottom:12px;font-size:.95rem}
+.pkg-options{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.pkg-opt{border:1.5px solid var(--bd);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:.83rem;background:#fff;transition:.15s}
+.pkg-opt:hover,.pkg-opt.sel{border-color:var(--g);background:var(--lg);color:var(--g);font-weight:600}
+.igrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.icard{border:2px solid var(--bd);border-radius:10px;padding:10px 12px;cursor:pointer;background:#fafff9;transition:.15s}
+.icard:hover,.icard.sel{border-color:var(--g);background:var(--lg)}
+.icode{font-weight:800;font-size:.95rem;color:var(--g)}
+.iname{font-size:.76rem;font-weight:600;color:#333;margin:2px 0}
+.idesc{font-size:.72rem;color:var(--gr)}
+.dest-result{background:var(--lg);border:1.5px solid var(--bd);border-radius:10px;padding:12px 16px;margin-top:10px}
+.dest-result .dr-label{font-size:.75rem;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.4px}
+.dest-result .dr-val{font-weight:700;color:#1b5e20;font-size:.95rem;margin-top:2px}
+.ddp-box{background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:14px 16px;margin-top:12px}
+.ddp-row{display:flex;justify-content:space-between;font-size:.85rem;padding:4px 0}
+.ddp-row.total{font-weight:800;border-top:1.5px solid #ffe082;margin-top:6px;padding-top:8px;font-size:.95rem;color:#6d4c00}
+.profit-base{background:var(--lg);border:1.5px solid var(--bd);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.profit-base-label{font-size:.78rem;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.4px}
+.profit-base-price{font-size:1.6rem;font-weight:900;color:var(--g);margin-top:4px}
+.profit-base-sub{font-size:.78rem;color:var(--gr);margin-top:2px}
+.profit-input-row{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.profit-type-toggle{display:flex;border:1.5px solid var(--bd);border-radius:8px;overflow:hidden}
+.profit-type-toggle button{flex:1;padding:8px 14px;border:none;background:#fafff9;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--gr);transition:.15s}
+.profit-type-toggle button.active{background:var(--g);color:#fff}
+.profit-num{display:flex;align-items:center;border:1.5px solid var(--bd);border-radius:8px;overflow:hidden;background:#fafff9}
+.profit-num input{border:none;background:transparent;width:90px;text-align:center;font-size:1rem;font-weight:700;outline:none}
+.profit-num button{padding:8px 12px;border:none;background:var(--lg);cursor:pointer;font-size:1.1rem;color:var(--g);font-weight:700}
+.profit-num button:hover{background:var(--bd)}
+.final-price-show{background:#1a5e1a;color:#fff;border-radius:10px;padding:14px 18px;margin-top:14px;display:flex;justify-content:space-between;align-items:center}
+.fps-label{font-size:.82rem;opacity:.8}
+.fps-val{font-size:1.5rem;font-weight:900}
+.sum-prod{background:#fff;border:1.5px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:12px}
+.sum-title{font-weight:700;font-size:1rem;color:var(--g);padding-bottom:8px;margin-bottom:10px;border-bottom:2px solid var(--lg);display:flex;justify-content:space-between}
+.sum-row{display:flex;justify-content:space-between;padding:5px 8px;border-radius:6px;font-size:.85rem;margin-bottom:2px}
+.sum-row.z{background:#f5faf5}
+.sum-row.res{background:#e8f5e9;border:1.5px solid var(--bd);font-weight:700;font-size:.95rem;margin-top:8px;padding:8px 12px}
+.sum-row span:first-child{color:var(--gr)}
+.lwrap{display:flex;align-items:center;justify-content:center;min-height:60vh}
+.lbox{background:#fff;border-radius:16px;padding:40px;width:340px;box-shadow:0 4px 24px #0002;text-align:center}
+.lbox h2{color:var(--g);margin-bottom:20px}
+.rdot{width:9px;height:9px;border-radius:50%;background:#4caf50;display:inline-block;margin-right:4px}
+.rdot.spin{background:#ff9800;animation:pu 1s infinite}
+.rdot.err{background:#f44336}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
+.dz{border:2.5px dashed var(--bd);border-radius:12px;padding:28px;text-align:center;cursor:pointer;background:#fafff9;display:block}
+.dz:hover{border-color:var(--g);background:var(--lg)}
+.dz p{color:var(--gr);font-size:.85rem;margin-top:6px}
+.ptbl{max-height:220px;overflow-y:auto;border:1px solid var(--bd);border-radius:8px;margin-top:10px}
+.logo-box{display:flex;align-items:center;gap:14px;margin-top:8px}
+.logo-preview{width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid var(--bd);background:#f0f7f0;padding:4px}
+.pkg-tag{background:var(--lg);border:1.5px solid var(--bd);border-radius:6px;padding:4px 10px;font-size:.8rem;display:inline-flex;align-items:center;gap:6px;margin:3px}
+.pkg-tag button{border:none;background:none;color:var(--rd);cursor:pointer;font-weight:700;padding:0 2px}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nlogo">🍊 EREN TARIM</div>
+  <div class="ntabs">
+    <button class="ntab active" id="tab0">Offer Builder</button>
+    <button class="ntab" id="tab1">Admin</button>
+  </div>
+</nav>
+
+<div id="offerPage" class="page active">
+  <div class="banner">
+    <div><h1>🍋 EREN Price Offers</h1><span id="weekLabel">Week --</span></div>
+    <div style="text-align:right">
+      <div style="font-size:.95rem;font-weight:600" id="incBanner">INCOTERM: EXW</div>
+      <div style="font-size:.8rem;opacity:.8">freshanatolia.com</div>
+    </div>
+  </div>
+  <div class="steps">
+    <button class="step-btn active" data-step="0">1. Transport</button>
+    <button class="step-btn" data-step="1">2. Products</button>
+    <button class="step-btn" data-step="2">3. Configure</button>
+    <button class="step-btn" data-step="3">4. Incoterms &amp; Dest.</button>
+    <button class="step-btn" data-step="4">5. Profit</button>
+    <button class="step-btn" data-step="5">6. Currency &amp; Summary</button>
+  </div>
+
+  <div class="step-panel active" id="sp0">
+    <div class="card">
+      <h2>Transport Type</h2>
+      <div class="g2">
+        <div><label>Transport Mode</label><select id="transportMode"><option value="tir">TIR / Container</option><option value="air">Air Freight</option></select></div>
+        <div><label>Offer Language</label><select id="offerLang"><option value="en">English</option><option value="ru">Russian</option></select></div>
+      </div>
+    </div>
+    <div class="nav-row"><span></span><button class="btn bg2" onclick="goStep(1)">Next →</button></div>
+  </div>
+
+  <div class="step-panel" id="sp1">
+    <div class="card"><h2>Select Products</h2><div id="prodList"></div></div>
+    <div class="nav-row"><button class="btn bgr" onclick="goStep(0)">← Back</button><button class="btn bg2" onclick="goStep(2)">Next →</button></div>
+  </div>
+
+  <div class="step-panel" id="sp2">
+    <div class="card"><h2>Configure Products</h2><div id="cfgPanels"></div></div>
+    <div class="nav-row"><button class="btn bgr" onclick="goStep(1)">← Back</button><button class="btn bg2" onclick="goStep(3)">Next →</button></div>
+  </div>
+
+  <div class="step-panel" id="sp3">
+    <div class="card">
+      <h2>INCOTERMS</h2>
+      <div class="igrid" id="incGrid"></div>
+    </div>
+    <div class="card">
+      <h2>Destination</h2>
+      <label>Select Destination</label>
+      <select id="destSelect" onchange="onDestChange()"><option value="">-- Select Destination --</option></select>
+      <div id="othersBox" style="display:none;margin-top:12px">
+        <div class="g3">
+          <div><label>Country</label><input type="text" id="othCountry" placeholder="e.g. Poland"/></div>
+          <div><label>City</label><input type="text" id="othCity" placeholder="e.g. Warsaw"/></div>
+          <div><label>Freight Cost (EUR)</label><input type="number" id="othFreight" placeholder="5000" oninput="updateDDPBox()"/></div>
+        </div>
+      </div>
+      <div id="destInfo" style="display:none" class="dest-result">
+        <div class="dr-label">Route</div><div class="dr-val" id="destInfoVal"></div>
+      </div>
+      <div id="ddpBox" style="display:none" class="ddp-box">
+        <div style="font-weight:700;color:#6d4c00;margin-bottom:8px;font-size:.9rem">DDP Logistics Breakdown (per product)</div>
+        <div id="ddpContent"></div>
+      </div>
+    </div>
+    <div class="nav-row"><button class="btn bgr" onclick="goStep(2)">← Back</button><button class="btn bg2" onclick="goStep(4)">Next →</button></div>
+  </div>
+
+  <div class="step-panel" id="sp4">
+    <div class="card"><h2>Profit Margin</h2><div id="profitPanels"></div></div>
+    <div class="nav-row"><button class="btn bgr" onclick="goStep(3)">← Back</button><button class="btn bg2" onclick="goStep(5)">Next →</button></div>
+  </div>
+
+  <div class="step-panel" id="sp5">
+    <div class="card">
+      <h2>Currency &amp; Details</h2>
+      <div class="g2">
+        <div><label>Display Currency</label>
+          <select id="dispCur" onchange="recalc()">
+            <option value="EUR">EUR €</option><option value="USD">USD $</option><option value="TRY">TRY ₺</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+          <span id="rateStatus" style="font-size:.78rem;color:var(--gr)"><span class="rdot spin"></span> Loading rates...</span>
+        </div>
+      </div>
+      <div class="g2">
+        <div><label>Buyer</label><input type="text" id="buyerName" placeholder="ABC Import Co."/></div>
+        <div><label>Validity</label><input type="text" id="validity" placeholder="Valid for 3 days"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Summary</h2>
+      <div id="sumContent"></div>
+      <div class="brow">
+        <button class="btn bac" id="pdfBtn" onclick="genPDF()">📄 Download PDF</button>
+        <span id="pdfStatus" style="font-size:.82rem;color:var(--gr)"></span>
+      </div>
+    </div>
+    <div class="nav-row"><button class="btn bgr" onclick="goStep(4)">← Back</button><span></span></div>
+  </div>
+</div>
+
+<div id="adminLoginPage" class="page">
+  <div class="lwrap"><div class="lbox">
+    <h2>Admin</h2>
+    <p style="color:var(--gr);font-size:.85rem;margin-bottom:20px">Password required</p>
+    <input type="password" id="adminPwd" placeholder="Password"/>
+    <button class="btn bg2" style="width:100%;margin-top:8px" onclick="doLogin()">Login</button>
+    <div id="pwdErr" class="al aer" style="display:none">Wrong password!</div>
+  </div></div>
+</div>
+
+<div id="adminPage" class="page">
+  <div class="banner"><div><h1>Admin Panel</h1></div><button class="btn bgr bsm" onclick="doLogout()">Logout</button></div>
+  <div class="card">
+    <h2>Settings</h2>
+    <div class="g4">
+      <div><label>Week</label><input type="number" id="sWeek"/></div>
+      <div><label>Year</label><input type="number" id="sYear"/></div>
+      <div><label>EUR-USD override</label><input type="number" id="sUSD" step="0.01" placeholder="Auto"/></div>
+      <div><label>EUR-TRY override</label><input type="number" id="sTRY" step="0.01" placeholder="Auto"/></div>
+    </div>
+    <div><label>New Password</label><input type="password" id="sPwd" placeholder="Leave blank to keep"/></div>
+    <div style="margin-top:14px">
+      <label>Company Logo (for PDF)</label>
+      <div class="logo-box">
+        <img id="logoPreview" class="logo-preview"/>
+        <div>
+          <button class="btn bgr bsm" onclick="el('logoFileInput').click()">📷 Upload Logo</button>
+          <input type="file" id="logoFileInput" accept="image/*" style="display:none"/>
+          <div style="font-size:.75rem;color:var(--gr);margin-top:4px">PNG/JPG. Saved permanently.</div>
+        </div>
+      </div>
+    </div>
+    <div class="brow"><button class="btn bg2" onclick="saveSettings()">Save</button><button class="btn bac" id="publishBtn" onclick="doPublish()">Publish</button></div>
+    <div id="setAlert"></div><div id="publishAlert"></div>
+    <div style="margin-top:12px;padding:10px;background:#fff8e1;border:1px solid #ffe082;border-radius:8px;font-size:.82rem;color:#6d4c00">Save = local only. Publish = visible to everyone instantly.</div>
+  </div>
+  <div class="card">
+    <h2>Import Excel</h2>
+    <div class="g2">
+      <div>
+        <div style="font-weight:700;color:var(--g);margin-bottom:8px">Product Price List</div>
+        <label for="prodFile" class="dz" id="prodDZ"><div style="font-size:2rem">📊</div><p>Click or drag .xlsx/.csv</p></label>
+        <input type="file" id="prodFile" accept=".xlsx,.xls,.xlsm,.xlsb,.csv" style="display:none"/>
+        <div id="prodPrev"></div>
+        <div id="prodImpBtn" style="display:none" class="brow">
+          <button class="btn bg2" onclick="impProducts()">Import</button>
+          <button class="btn bgr" onclick="clrImport('product')">Cancel</button>
+        </div>
+        <div id="prodImpAlert"></div>
+      </div>
+      <div>
+        <div style="font-weight:700;color:var(--g);margin-bottom:8px">Freight List</div>
+        <label for="freightFile" class="dz" id="freightDZ"><div style="font-size:2rem">🗺</div><p>Click or drag .xlsx/.csv</p></label>
+        <input type="file" id="freightFile" accept=".xlsx,.xls,.xlsm,.xlsb,.csv" style="display:none"/>
+        <div id="freightPrev"></div>
+        <div id="freightImpBtn" style="display:none" class="brow">
+          <button class="btn bg2" onclick="impFreight()">Import</button>
+          <button class="btn bgr" onclick="clrImport('freight')">Cancel</button>
+        </div>
+        <div id="freightImpAlert"></div>
+      </div>
+    </div>
+    <div id="aiStatus" style="display:none" class="al ain">Reading with AI...</div>
+  </div>
+  <div class="card">
+    <h2>Products (manual)</h2>
+    <div id="adminProdList"></div>
+    <div class="divider"></div>
+    <b style="color:var(--g)">Add / Edit Product</b>
+    <input type="hidden" id="ePid"/>
+    <div class="g4">
+      <div><label>Product Name</label><input type="text" id="pName"/></div>
+      <div><label>Size</label><input type="text" id="pSize"/></div>
+      <div><label>EUR/kg (EXW)</label><input type="number" id="pEUR" step="0.001"/></div>
+      <div><label>USD/kg (EXW)</label><input type="number" id="pUSD" step="0.001"/></div>
+    </div>
+    <div class="g4">
+      <div><label>TIR KG</label><input type="number" id="pTKG"/></div>
+      <div><label>Analysis (Total EUR)</label><input type="number" id="pAna" step="0.01" placeholder="120"/></div>
+      <div><label>Fruitog (Total EUR, DDP)</label><input type="number" id="pFruit" step="0.01" placeholder="450"/></div>
+      <div></div>
+    </div>
+    <div style="margin-top:12px">
+      <label>Packaging Options</label>
+      <div style="font-size:.78rem;color:var(--gr);margin-bottom:6px">Add packaging types with extra cost above EXW price</div>
+      <div class="g3">
+        <div><label>Label</label><input type="text" id="newPkgLabel" placeholder="Pls Box"/></div>
+        <div><label>Extra EUR/kg</label><input type="number" id="newPkgEur" step="0.001" placeholder="0.00"/></div>
+        <div><label>Extra USD/kg</label><input type="number" id="newPkgUsd" step="0.001" placeholder="0.00"/></div>
+      </div>
+      <button class="btn bgr bsm" style="margin-top:8px" onclick="addPkgOption()">+ Add Packaging</button>
+      <div id="pkgList" style="margin-top:8px;display:flex;flex-wrap:wrap"></div>
+    </div>
+    <div class="brow"><button class="btn bg2" onclick="saveProduct()">Save</button><button class="btn bgr" onclick="clrProd()">Clear</button></div>
+    <div id="pAlert"></div>
+  </div>
+  <div class="card">
+    <h2>Freight (manual)</h2>
+    <div id="adminFreightList"></div>
+    <div class="divider"></div>
+    <b style="color:var(--g)">Add / Edit Route</b>
+    <input type="hidden" id="eFid"/>
+    <div class="g4">
+      <div><label>Country</label><input type="text" id="fCo"/></div>
+      <div><label>City</label><input type="text" id="fCi"/></div>
+      <div><label>Mode</label><select id="fMo"><option value="tir">TIR</option><option value="air">Air</option></select></div>
+      <div><label>Currency</label><select id="fCur"><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
+    </div>
+    <div class="g3">
+      <div><label>Freight Cost</label><input type="number" id="fCst" step="1"/></div>
+      <div><label>Max KG</label><input type="number" id="fMx"/></div>
+      <div><label>Transit</label><input type="text" id="fTr"/></div>
+    </div>
+    <div class="brow"><button class="btn bg2" onclick="saveFreight()">Save</button><button class="btn bgr" onclick="clrFreight()">Clear</button></div>
+    <div id="fAlert"></div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+var ST={
+  settings:{week:24,year:2026,pwd:'eren2026',usdOverride:0,tryOverride:0},
+  products:[
+    {id:'p1',name:'Mandarin W.Murcott',size:'53mm+',price:0.68,priceUSD:0.74,tirKg:24000,analysis:120,fruitog:450,
+     pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}]},
+    {id:'p2',name:'Grapefruit Rio Red',size:'28-45',price:0.63,priceUSD:0.74,tirKg:20000,analysis:100,fruitog:450,
+     pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}]},
+    {id:'p3',name:'Grapefruit Rio Red II',size:'28-55',price:0.42,priceUSD:0.49,tirKg:20000,analysis:100,fruitog:450,
+     pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}]}
+  ],
+  freight:[
+    {id:'f1',country:'Russia',city:'Kaliningrad',mode:'tir',currency:'EUR',cost:4900,maxKg:24000,transit:'7 days'},
+    {id:'f2',country:'Russia',city:'Moscow',mode:'tir',currency:'USD',cost:3600,maxKg:20000,transit:'3-4 days'},
+    {id:'f3',country:'Germany',city:'Hamburg',mode:'tir',currency:'EUR',cost:4500,maxKg:24000,transit:'7 days'}
+  ]
+};
+var selInc='EXW',adminOK=false,liveRates={usd:1.08,tryR:38},LOGO_B64=null;
+var STOR='erentarim_v8',pParsed=null,fParsed=null;
+// selProds[id]={qty, tirKg, profitType, profitVal, pkgIdx}
+var selProds={};
+var editPkgOptions=[];
+
+function el(id){return document.getElementById(id);}
+function val(id){return el(id).value;}
+function setVal(id,v){el(id).value=v;}
+function mk(tag,cls){var e=document.createElement(tag);if(cls)e.className=cls;return e;}
+function mkBtn(txt,cls,fn){var b=mk('button','btn '+cls);b.textContent=txt;if(fn)b.onclick=fn;return b;}
+function appendOpt(sel,v,t){var o=mk('option');o.value=v;o.textContent=t;sel.appendChild(o);}
+function mkTbl(headers){var tbl=mk('table'),thead=mk('thead'),tr=mk('tr');headers.forEach(function(h){var th=mk('th');th.textContent=h;tr.appendChild(th);});thead.appendChild(tr);tbl.appendChild(mk('tbody'));return tbl;}
+function fmt(n){return (Math.round((+n||0)*100)/100).toFixed(2);}
+function getRate(){var c=val('dispCur');return c==='USD'?liveRates.usd:c==='TRY'?liveRates.tryR:1;}
+function getSym(){var c=val('dispCur');return c==='USD'?'$':c==='TRY'?'₺':'€';}
+function showAlert(id,msg,ok){var e=el(id);e.className='al '+(ok?'aok':'aer');e.textContent=msg;setTimeout(function(){e.textContent='';e.className='';},3000);}
+function getTirKg(p,cfg){return (cfg&&cfg.tirKg!==undefined)?cfg.tirKg:(p?p.tirKg||0:0);}
+
+// ── STEP NAV ──
+var curStep=0;
+function goStep(n){
+  curStep=n;
+  document.querySelectorAll('.step-panel').forEach(function(p,i){p.classList.toggle('active',i===n);});
+  document.querySelectorAll('.step-btn').forEach(function(b,i){b.classList.remove('active','done');if(i===n)b.classList.add('active');else if(i<n)b.classList.add('done');});
+  if(n===1)buildProdList();
+  if(n===2)buildCfgPanels();
+  if(n===3){buildIncGrid();buildDestDropdown();}
+  if(n===4)buildProfitPanels();
+  if(n===5)recalc();
+}
+
+// ── PAGES ──
+function showPage(id,idx){['offerPage','adminLoginPage','adminPage'].forEach(function(p){el(p).classList.remove('active');});el(id).classList.add('active');document.querySelectorAll('.ntab').forEach(function(t,i){t.classList.toggle('active',i===idx);});}
+el('tab0').onclick=function(){showPage('offerPage',0);};
+el('tab1').onclick=function(){if(adminOK){renderAdmin();showPage('adminPage',1);}else showPage('adminLoginPage',1);};
+
+// ── RATES ──
+async function fetchRates(){
+  if(ST.settings.usdOverride)liveRates.usd=ST.settings.usdOverride;
+  if(ST.settings.tryOverride)liveRates.tryR=ST.settings.tryOverride;
+  if(ST.settings.usdOverride&&ST.settings.tryOverride){el('rateStatus').innerHTML='<span class="rdot"></span> 1 EUR = $'+fmt(liveRates.usd)+' / '+fmt(liveRates.tryR)+' TRY (override)';return;}
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,tools:[{type:'web_search_20250305',name:'web_search'}],system:'Return ONLY raw JSON like {"usd":1.08,"try":38.5}. No markdown.',messages:[{role:'user',content:'Current EUR to USD and EUR to TRY exchange rates. Return ONLY JSON: {"usd":X,"try":Y}'}]})});
+    var d=await res.json();var raw='';
+    for(var i=0;i<(d.content||[]).length;i++){if(d.content[i].type==='text')raw+=d.content[i].text;}
+    raw=raw.replace(/```[a-z]*/gi,'').replace(/```/g,'').trim();
+    var m=raw.match(/\{[^{}]*\}/);var p2=m?JSON.parse(m[0]):JSON.parse(raw);
+    if(!p2||!p2.usd)throw new Error('no data');
+    if(!ST.settings.usdOverride)liveRates.usd=parseFloat(p2.usd)||1.08;
+    if(!ST.settings.tryOverride)liveRates.tryR=parseFloat(p2['try'])||38;
+    el('rateStatus').innerHTML='<span class="rdot"></span> 1 EUR = $'+fmt(liveRates.usd)+' / '+fmt(liveRates.tryR)+' TRY';
+  }catch(e){el('rateStatus').innerHTML='<span class="rdot err"></span> Default: $'+fmt(liveRates.usd)+' / '+fmt(liveRates.tryR)+' TRY';}
+}
+
+// ── STORAGE ──
+function saveST(){try{window.storage.set(STOR,JSON.stringify(ST)).catch(function(){});}catch(e){}}
+function loadST(){
+  try{
+    window.storage.get('erentarim_logo').then(function(r){if(r&&r.value){LOGO_B64=r.value;var lp=el('logoPreview');if(lp)lp.src=r.value;}}).catch(function(){});
+    window.storage.get('erentarim_shared_v8',true).then(function(sh){
+      if(sh&&sh.value){try{var s=JSON.parse(sh.value);if(s.products)ST.products=s.products;if(s.freight)ST.freight=s.freight;if(s.settings){if(s.settings.week)ST.settings.week=s.settings.week;if(s.settings.year)ST.settings.year=s.settings.year;}}catch(e){}}
+      return window.storage.get(STOR);
+    }).then(function(r){
+      if(r&&r.value){try{var l=JSON.parse(r.value);if(l.settings)Object.assign(ST.settings,l.settings);}catch(e){}}
+      init();fetchRates();startPolling();
+    }).catch(function(){init();fetchRates();startPolling();});
+  }catch(e){init();fetchRates();startPolling();}
+}
+var _poll=null;
+function startPolling(){
+  if(_poll)clearInterval(_poll);
+  _poll=setInterval(function(){
+    if(adminOK)return;
+    try{window.storage.get('erentarim_shared_v8',true).then(function(sh){
+      if(!sh||!sh.value)return;
+      try{var s=JSON.parse(sh.value);var ch=false;
+        if(JSON.stringify(s.products)!==JSON.stringify(ST.products)){ST.products=s.products;ch=true;}
+        if(JSON.stringify(s.freight)!==JSON.stringify(ST.freight)){ST.freight=s.freight;ch=true;}
+        if(s.settings&&s.settings.week!==ST.settings.week){ST.settings.week=s.settings.week;ch=true;}
+        if(ch){el('weekLabel').textContent='Week '+ST.settings.week+' / '+ST.settings.year;if(curStep===1)buildProdList();}
+      }catch(e){}
+    }).catch(function(){});}catch(e){}
+  },15000);
+}
+function init(){el('weekLabel').textContent='Week '+ST.settings.week+' / '+ST.settings.year;}
+function findProd(id){return ST.products.find(function(p){return p.id===id;})||null;}
+
+// ── STEP 1: PRODUCTS ──
+function buildProdList(){
+  var c=el('prodList');c.innerHTML='';
+  ST.products.forEach(function(p){
+    var sel=!!selProds[p.id];
+    var row=mk('div','prod-row'+(sel?' sel':''));
+    var chk=mk('div','prod-check');chk.innerHTML=sel?'✓':'';
+    var info=mk('div','prod-info');
+    var nm=mk('div','prod-name');nm.textContent=p.name+(p.size?' ('+p.size+')':'');
+    var meta=mk('div','prod-meta');
+    var pkgs=(p.pkgOptions||[]).map(function(pk){return pk.label+(pk.extraEUR>0?' +€'+fmt(pk.extraEUR):'');}).join(', ');
+    meta.textContent='Pkg: '+pkgs+' | TIR: '+(p.tirKg||0).toLocaleString()+' kg';
+    info.appendChild(nm);info.appendChild(meta);
+    var pb=mk('div');
+    var pp=mk('div','prod-price');pp.textContent='€'+fmt(p.price)+'/kg';
+    var ps=mk('div','prod-price-sub');ps.textContent=p.priceUSD?'$'+fmt(p.priceUSD)+'/kg':'';
+    pb.appendChild(pp);pb.appendChild(ps);
+    row.appendChild(chk);row.appendChild(info);row.appendChild(pb);
+    row.onclick=function(){
+      if(selProds[p.id]){delete selProds[p.id];}
+      else{selProds[p.id]={qty:p.tirKg||1000,tirKg:p.tirKg||0,profitType:'fixed',profitVal:0,pkgIdx:0};}
+      buildProdList();
+    };
+    c.appendChild(row);
+  });
+  if(!ST.products.length)c.textContent='No products. Add them in Admin.';
+}
+
+// ── STEP 2: CONFIGURE ──
+function buildCfgPanels(){
+  var c=el('cfgPanels');c.innerHTML='';
+  var ids=Object.keys(selProds);
+  if(!ids.length){c.innerHTML='<p style="color:var(--gr)">No products selected.</p>';return;}
+  ids.forEach(function(id){
+    var p=findProd(id);if(!p)return;
+    var cfg=selProds[id];
+    var box=mk('div','cfg-card');
+    var title=mk('div','cfg-title');title.textContent=p.name+(p.size?' ('+p.size+')':'');
+    box.appendChild(title);
+    var qg=mk('div','g2');
+    // Quantity
+    var qw=mk('div');var ql=mk('label');ql.textContent='Quantity (KG)';
+    var qi=mk('input');qi.type='number';qi.value=cfg.qty;
+    qi.oninput=function(){cfg.qty=parseFloat(this.value)||0;};
+    qw.appendChild(ql);qw.appendChild(qi);
+    // TIR Capacity — editable
+    var tw=mk('div');var tl=mk('label');tl.textContent='TIR Capacity (kg)';
+    var ti=mk('input');ti.type='number';ti.value=getTirKg(p,cfg);
+    ti.style.fontWeight='700';ti.style.color='var(--g)';
+    ti.oninput=function(){cfg.tirKg=parseFloat(this.value)||0;};
+    tw.appendChild(tl);tw.appendChild(ti);
+    qg.appendChild(qw);qg.appendChild(tw);box.appendChild(qg);
+    // Packaging
+    var pkl=mk('label');pkl.textContent='Packaging';box.appendChild(pkl);
+    var pkgopts=p.pkgOptions&&p.pkgOptions.length?p.pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}];
+    var pkgs=mk('div','pkg-options');
+    pkgopts.forEach(function(pk,i){
+      var opt=mk('div','pkg-opt'+(cfg.pkgIdx===i?' sel':''));
+      var extra='';
+      if(pk.extraEUR>0||pk.extraUSD>0){extra=' (+€'+fmt(pk.extraEUR)+(pk.extraUSD>0?' / +$'+fmt(pk.extraUSD):'')+')';}
+      opt.textContent=pk.label+extra;
+      opt.onclick=(function(idx){return function(){cfg.pkgIdx=idx;buildCfgPanels();};})(i);
+      pkgs.appendChild(opt);
+    });
+    box.appendChild(pkgs);
+    c.appendChild(box);
+  });
+}
+
+// ── STEP 3: INCOTERMS ──
+var INCOTERMS=[{code:'EXW',name:'Ex Works',desc:'Seller delivers at factory'},{code:'FCA',name:'Free Carrier',desc:'Seller delivers to carrier'},{code:'FOB',name:'Free on Board',desc:'Seller loads onto vessel'},{code:'CIF',name:'Cost Insurance Freight',desc:'Seller pays freight & insurance'},{code:'DAP',name:'Delivered at Place',desc:'Seller delivers to named destination'},{code:'DDP',name:'Delivered Duty Paid',desc:'Seller covers all costs'}];
+function buildIncGrid(){
+  var g=el('incGrid');g.innerHTML='';
+  INCOTERMS.forEach(function(t){
+    var d=mk('div','icard'+(selInc===t.code?' sel':''));
+    var c1=mk('div','icode');c1.textContent=t.code;
+    var c2=mk('div','iname');c2.textContent=t.name;
+    var c3=mk('div','idesc');c3.textContent=t.desc;
+    d.appendChild(c1);d.appendChild(c2);d.appendChild(c3);
+    d.onclick=function(){selInc=t.code;buildIncGrid();el('incBanner').textContent='INCOTERM: '+t.code;updateDDPBox();};
+    g.appendChild(d);
+  });
+}
+function buildDestDropdown(){
+  var sel=el('destSelect');var mode=val('transportMode');var cur=sel.value;
+  sel.innerHTML='';appendOpt(sel,'','-- Select Destination --');
+  ST.freight.forEach(function(f){if(f.mode===mode)appendOpt(sel,f.id,f.country+' / '+f.city+(f.transit?' ('+f.transit+')':''));});
+  appendOpt(sel,'others','Others (custom)');
+  if(cur)sel.value=cur;
+  onDestChange();
+}
+function getSelRoute(){var v=val('destSelect');if(!v||v==='others')return null;return ST.freight.find(function(f){return f.id===v;})||null;}
+function toEUR(route){if(!route)return 0;var cost=parseFloat(route.cost)||0;return String(route.currency||'EUR').toUpperCase()==='USD'?cost/liveRates.usd:cost;}
+function getFreightEUR(){var v=val('destSelect');if(v==='others')return parseFloat(val('othFreight'))||0;var r=getSelRoute();return r?toEUR(r):0;}
+
+// Total TIR kg across all selected products
+function getTotalTirKg(){
+  return Object.keys(selProds).reduce(function(s,id){
+    var c=selProds[id];var p=findProd(id)||{};return s+getTirKg(p,c);
+  },0);
+}
+
+function onDestChange(){
+  var v=val('destSelect');
+  el('othersBox').style.display=v==='others'?'block':'none';
+  var route=getSelRoute();
+  var di=el('destInfo');
+  if(route){di.style.display='block';el('destInfoVal').textContent=route.country+' / '+route.city+' | '+String(route.currency||'EUR').toUpperCase()+' '+parseFloat(route.cost).toLocaleString()+' | Max '+(route.maxKg||24000).toLocaleString()+' kg | '+route.transit;}
+  else di.style.display='none';
+  updateDDPBox();
+}
+function updateDDPBox(){
+  var box=el('ddpBox');var ids=Object.keys(selProds);
+  if(selInc!=='DDP'||!ids.length){box.style.display='none';return;}
+  box.style.display='block';
+  var c=el('ddpContent');c.innerHTML='';
+  var freightEUR=getFreightEUR();
+  var totalTirKg=getTotalTirKg();
+  ids.forEach(function(id){
+    var p=findProd(id);if(!p)return;
+    var cfg=selProds[id];
+    var tirKg=getTirKg(p,cfg);
+    var qty=parseFloat(cfg.qty)||0;
+    var freightShare=totalTirKg>0?freightEUR*(tirKg/totalTirKg):freightEUR;
+    var ana=parseFloat(p.analysis)||0;
+    var fruit=parseFloat(p.fruitog)||450;
+    var total=freightShare+ana+fruit;
+    var pd=mk('div');pd.style.marginBottom='10px';
+    var ptitle=mk('div');ptitle.style.cssText='font-weight:700;color:#6d4c00;margin-bottom:4px;font-size:.85rem';
+    ptitle.textContent=p.name;pd.appendChild(ptitle);
+    [['Freight (share)','€'+fmt(freightShare)],['Analyses','€'+fmt(ana)],['Fruitog','€'+fmt(fruit)]].forEach(function(pair){
+      var r=mk('div','ddp-row');var s1=mk('span');s1.textContent=pair[0];var s2=mk('span');s2.textContent=pair[1];r.appendChild(s1);r.appendChild(s2);pd.appendChild(r);
+    });
+    var tot=mk('div','ddp-row total');var t1=mk('span');t1.textContent='Total Logistics Cost';var t2=mk('span');t2.textContent='€'+fmt(total);tot.appendChild(t1);tot.appendChild(t2);pd.appendChild(tot);
+    c.appendChild(pd);
+  });
+}
+
+// ── COST CALC ──
+function getBaseCostDisp(p,cfg){
+  var freightEUR=getFreightEUR();
+  var totalTirKg=getTotalTirKg();
+  var tirKg=getTirKg(p,cfg);
+  var qty=parseFloat(cfg.qty)||0;
+  var cur=val('dispCur');var rate=getRate();
+  var freightShare=totalTirKg>0?freightEUR*(tirKg/totalTirKg):freightEUR;
+  var freightPerKg=qty>0?freightShare/qty:0;
+  var anaPerKg=qty>0?(parseFloat(p.analysis)||0)/qty:0;
+  var fruitPerKg=(selInc==='DDP'&&qty>0)?(parseFloat(p.fruitog)||450)/qty:0;
+  var pkgOpts=p.pkgOptions&&p.pkgOptions.length?p.pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}];
+  var pkgOpt=pkgOpts[cfg.pkgIdx||0]||pkgOpts[0];
+  var exwDisp=(cur==='USD'&&p.priceUSD>0)?p.priceUSD:p.price*rate;
+  var pkgDisp=(cur==='USD')?(pkgOpt.extraUSD||0):(pkgOpt.extraEUR||0)*rate;
+  return{
+    exw:exwDisp,freight:freightPerKg*rate,ana:anaPerKg*rate,fruit:fruitPerKg*rate,pkg:pkgDisp,
+    total:exwDisp+freightPerKg*rate+anaPerKg*rate+fruitPerKg*rate+pkgDisp
+  };
+}
+function getFinalPriceDisp(p,cfg){
+  var b=getBaseCostDisp(p,cfg);
+  var pv=parseFloat(cfg.profitVal)||0;
+  var profit=cfg.profitType==='pct'?b.total*(pv/100):pv;
+  return{base:b,profit:profit,final:b.total+profit};
+}
+
+// ── STEP 4: PROFIT ──
+function buildProfitPanels(){
+  var c=el('profitPanels');c.innerHTML='';
+  var ids=Object.keys(selProds);
+  if(!ids.length){c.innerHTML='<p style="color:var(--gr)">No products selected.</p>';return;}
+  ids.forEach(function(id){
+    var p=findProd(id);if(!p)return;
+    var cfg=selProds[id];
+    var box=mk('div','cfg-card');
+    var title=mk('div','cfg-title');title.textContent=p.name+(p.size?' ('+p.size+')':'');box.appendChild(title);
+    var baseBox=mk('div','profit-base');
+    var bl=mk('div','profit-base-label');bl.textContent='Base cost (all costs excl. profit)';
+    var bv=mk('div','profit-base-price');bv.id='base-'+id;
+    var bs=mk('div','profit-base-sub');bs.id='bsub-'+id;
+    baseBox.appendChild(bl);baseBox.appendChild(bv);baseBox.appendChild(bs);box.appendChild(baseBox);
+    var prow=mk('div','profit-input-row');
+    var toggle=mk('div','profit-type-toggle');
+    var fixBtn=mk('button',cfg.profitType==='fixed'?'active':'');fixBtn.textContent='Fixed (€/kg)';
+    var pctBtn=mk('button',cfg.profitType==='pct'?'active':'');pctBtn.textContent='Percentage (%)';
+    fixBtn.onclick=function(){cfg.profitType='fixed';fixBtn.className='active';pctBtn.className='';inp.step='0.01';refreshProfitDisplay(id);};
+    pctBtn.onclick=function(){cfg.profitType='pct';pctBtn.className='active';fixBtn.className='';inp.step='1';refreshProfitDisplay(id);};
+    toggle.appendChild(fixBtn);toggle.appendChild(pctBtn);
+    var numBox=mk('div','profit-num');
+    var minusBtn=mk('button');minusBtn.textContent='−';
+    var inp=mk('input');inp.type='number';inp.id='profit-inp-'+id;inp.value=fmt(cfg.profitVal||0);inp.step=cfg.profitType==='fixed'?'0.01':'1';
+    inp.oninput=function(){cfg.profitVal=parseFloat(this.value)||0;refreshProfitDisplay(id);};
+    var plusBtn=mk('button');plusBtn.textContent='+';
+    minusBtn.onclick=function(){var step=cfg.profitType==='fixed'?0.01:1;cfg.profitVal=Math.max(0,(parseFloat(cfg.profitVal)||0)-step);inp.value=cfg.profitType==='fixed'?fmt(cfg.profitVal):String(Math.round(cfg.profitVal));refreshProfitDisplay(id);};
+    plusBtn.onclick=function(){var step=cfg.profitType==='fixed'?0.01:1;cfg.profitVal=(parseFloat(cfg.profitVal)||0)+step;inp.value=cfg.profitType==='fixed'?fmt(cfg.profitVal):String(Math.round(cfg.profitVal));refreshProfitDisplay(id);};
+    numBox.appendChild(minusBtn);numBox.appendChild(inp);numBox.appendChild(plusBtn);
+    prow.appendChild(toggle);prow.appendChild(numBox);box.appendChild(prow);
+    var fps=mk('div','final-price-show');
+    var fpl=mk('div','fps-label');fpl.textContent='Final Price (with profit)';
+    var fpv=mk('div','fps-val');fpv.id='fpv-'+id;
+    fps.appendChild(fpl);fps.appendChild(fpv);box.appendChild(fps);
+    c.appendChild(box);
+    refreshProfitDisplay(id);
+  });
+}
+function refreshProfitDisplay(id){
+  var p=findProd(id);if(!p)return;
+  var cfg=selProds[id];var sym=getSym();
+  var res=getFinalPriceDisp(p,cfg);
+  var bEl=el('base-'+id);var bsEl=el('bsub-'+id);var fpEl=el('fpv-'+id);
+  if(bEl)bEl.textContent=sym+fmt(res.base.total)+'/kg';
+  if(bsEl){
+    var parts=['EXW '+sym+fmt(res.base.exw)];
+    if(res.base.freight>0)parts.push('Freight '+sym+fmt(res.base.freight));
+    if(res.base.ana>0)parts.push('Analysis '+sym+fmt(res.base.ana));
+    if(res.base.fruit>0)parts.push('Fruitog '+sym+fmt(res.base.fruit));
+    if(res.base.pkg>0)parts.push('Pkg +'+sym+fmt(res.base.pkg));
+    bsEl.textContent=parts.join(' + ');
+  }
+  if(fpEl)fpEl.textContent=sym+fmt(res.final)+'/kg';
+}
+
+// ── STEP 5: SUMMARY ──
+function recalc(){
+  var ids=Object.keys(selProds);
+  var wrap=el('sumContent');wrap.innerHTML='';
+  if(!ids.length){wrap.innerHTML='<p style="color:var(--gr)">No products selected.</p>';return;}
+  var sym=getSym();
+  var freightEUR=getFreightEUR();
+  var totalTirKg=getTotalTirKg();
+  var route=getSelRoute();
+  ids.forEach(function(id){
+    var p=findProd(id);if(!p)return;
+    var cfg=selProds[id];
+    var qty=parseFloat(cfg.qty)||0;
+    var tirKg=getTirKg(p,cfg);
+    var res=getFinalPriceDisp(p,cfg);
+    var pkgOpts=p.pkgOptions&&p.pkgOptions.length?p.pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}];
+    var pkgOpt=pkgOpts[cfg.pkgIdx||0]||pkgOpts[0];
+    var box=mk('div','sum-prod');
+    var titleRow=mk('div','sum-title');
+    var tl=mk('span');tl.textContent=p.name+(p.size?' ('+p.size+')':'');tl.style.fontSize='.9rem';
+    var tr2=mk('span');tr2.style.cssText='color:#1b5e20;font-size:1.25rem;font-weight:900';tr2.textContent=sym+fmt(res.final)+'/kg';
+    titleRow.appendChild(tl);titleRow.appendChild(tr2);box.appendChild(titleRow);
+    function row(lbl,v,z){var r=mk('div','sum-row'+(z?' z':''));var s1=mk('span');s1.textContent=lbl;var s2=mk('span');s2.style.fontWeight='600';s2.textContent=v;r.appendChild(s1);r.appendChild(s2);box.appendChild(r);}
+    row('EXW Price',sym+fmt(res.base.exw)+'/kg',true);
+    if(res.base.pkg>0)row('Packaging ('+pkgOpt.label+')','+'+sym+fmt(res.base.pkg)+'/kg',false);
+    if(freightEUR>0){
+      var freightShare=totalTirKg>0?freightEUR*(tirKg/totalTirKg):freightEUR;
+      row('Freight (€'+fmt(freightShare)+'÷'+qty.toLocaleString()+'kg)','+'+sym+fmt(res.base.freight)+'/kg',true);
+    }
+    row('Analysis (€'+fmt(parseFloat(p.analysis)||0)+'÷'+qty.toLocaleString()+'kg)','+'+sym+fmt(res.base.ana)+'/kg',false);
+    if(selInc==='DDP')row('Fruitog (€'+fmt(parseFloat(p.fruitog)||450)+'÷'+qty.toLocaleString()+'kg) [DDP]','+'+sym+fmt(res.base.fruit)+'/kg',true);
+    var profitLabel='Profit '+(cfg.profitType==='pct'?'('+fmt(parseFloat(cfg.profitVal)||0)+'%)':'(fixed)');
+    row(profitLabel,'+'+sym+fmt(res.profit)+'/kg',false);
+    var resRow=mk('div','sum-row res');var rs1=mk('span');rs1.textContent='Final Price';var rs2=mk('span');rs2.style.color='#1b5e20';rs2.textContent=sym+fmt(res.final)+'/kg';resRow.appendChild(rs1);resRow.appendChild(rs2);box.appendChild(resRow);
+    wrap.appendChild(box);
+  });
+  var foot=mk('div');foot.style.cssText='background:#f5f5f5;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;font-size:.84rem;color:var(--gr);margin-top:4px';
+  var fl=mk('span');
+  var v2=val('destSelect');
+  var destText=v2==='others'?(val('othCountry')||'?')+' / '+(val('othCity')||'?'):(route?route.country+' / '+route.city+' | '+route.transit:'No destination');
+  fl.textContent=selInc+' | '+destText;
+  var fr=mk('span');fr.textContent='Total TIR: '+totalTirKg.toLocaleString()+' kg';
+  foot.appendChild(fl);foot.appendChild(fr);wrap.appendChild(foot);
+}
+
+// ── PDF ──
+function pad(n){return n<10?'0'+n:String(n);}
+function genPDF(){
+  var sym=getSym(),cur=val('dispCur');
+  var buyer=val('buyerName')||'--',validity=val('validity');
+  var route=getSelRoute();
+  var ids=Object.keys(selProds);
+  var now=new Date();
+  var ds=pad(now.getDate())+'.'+pad(now.getMonth()+1)+'.'+now.getFullYear();
+  var totalTirKg=getTotalTirKg();
+  el('pdfStatus').textContent='Preparing...';el('pdfBtn').disabled=true;
+  var grand=0,tableRows=[];
+  ids.forEach(function(id){
+    var p=findProd(id);if(!p)return;
+    var cfg=selProds[id];var qty=parseFloat(cfg.qty)||0;
+    var res=getFinalPriceDisp(p,cfg);
+    var pkgOpts=p.pkgOptions&&p.pkgOptions.length?p.pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0}];
+    var pkgOpt=pkgOpts[cfg.pkgIdx||0]||pkgOpts[0];
+    grand+=res.final*qty;
+    tableRows.push({name:p.name,size:p.size||'',pkg:pkgOpt.label,price:sym+fmt(res.final)+'/kg',qty:qty.toLocaleString()+' kg',total:sym+fmt(res.final*qty)});
+  });
+  var incoStr=selInc+(route?' - '+route.city+', '+route.country:'');
+  var offerNo='ERN-'+ST.settings.week+'-'+now.getFullYear();
+  var tRows=tableRows.map(function(r,i){
+    var bg=i%2===0?'#f8fdf8':'#ffffff';
+    return '<tr style="background:'+bg+'"><td style="padding:9px 10px;border-bottom:1px solid #d4ead4;font-weight:600;color:#0d2e0d">'+r.name+(r.size?'<br><small style="color:#666">('+r.size+')</small>':'')+'</td>'
+      +'<td style="padding:9px 8px;border-bottom:1px solid #d4ead4;text-align:center">'+r.pkg+'</td>'
+      +'<td style="padding:9px 8px;border-bottom:1px solid #d4ead4;text-align:center;font-weight:800;font-size:14px;color:#1a5e1a">'+r.price+'</td>'
+      +'<td style="padding:9px 8px;border-bottom:1px solid #d4ead4;text-align:center;font-weight:600">'+r.qty+'</td>'
+      +'<td style="padding:9px 8px;border-bottom:1px solid #d4ead4;text-align:center;font-weight:700">'+r.total+'</td></tr>';
+  }).join('');
+  var logoTag=LOGO_B64?'<img src="'+LOGO_B64+'" style="width:64px;height:64px;object-fit:contain;border-radius:50%;border:2px solid #2d6a2d;background:#fff;padding:2px"/>':'<div style="width:64px;height:64px;background:#2d6a2d;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;font-weight:900">E</div>';
+  var html='<html><head><meta charset="UTF-8"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a1a}table{width:100%;border-collapse:collapse}</style></head><body>'
+    +'<div style="background:#0d1f0d;padding:18px 24px;display:flex;align-items:center;justify-content:space-between">'+logoTag
+    +'<div style="flex:1;margin-left:14px"><div style="color:#fff;font-size:17px;font-weight:800">EREN | PRICE OFFERS — WEEK '+ST.settings.week+'</div>'
+    +'<div style="color:#7cb87c;font-size:8px;margin-top:3px">EREN TARIM ÜRÜNLERİ SAN. ve TİC. LTD. ŞTİ. | www.freshanatolia.com | +90 324 454 14 87/88</div></div>'
+    +'<div style="text-align:right"><div style="color:#fff;font-size:20px;font-weight:800">'+ds+'</div>'
+    +'<div style="margin-top:5px;background:#cc0000;color:#fff;padding:3px 12px;border-radius:15px;font-size:9px;font-weight:700;display:inline-block">'+incoStr+'</div>'
+    +(validity?'<div style="color:#ffe082;font-size:8px;margin-top:3px">'+validity+'</div>':'')+'</div></div>'
+    +'<div style="background:#f7fbf7;border-bottom:2px solid #d0e8d0;padding:8px 24px;display:flex;flex-wrap:wrap">'
+    +[{l:'OFFER NO',v:offerNo},{l:'DATE',v:ds},{l:'BUYER',v:buyer},{l:'INCOTERM',v:selInc},{l:'CURRENCY',v:cur}]
+     .map(function(c){return '<div style="flex:1;min-width:100px;padding:4px 8px 4px 0"><div style="font-size:7px;font-weight:700;color:#999;text-transform:uppercase">'+c.l+'</div><div style="font-size:10px;font-weight:600;color:#1a3a1a;margin-top:1px">'+c.v+'</div></div>';}).join('')+'</div>'
+    +'<div style="padding:12px 24px 0"><table>'
+    +'<thead><tr style="background:#1a5e1a"><th style="color:#fff;padding:8px 10px;text-align:left;font-size:8px;text-transform:uppercase">Product</th><th style="color:#fff;padding:8px 6px;text-align:center;font-size:8px;text-transform:uppercase">Packaging</th><th style="color:#fff;padding:8px 6px;text-align:center;font-size:8px;text-transform:uppercase">Unit Price</th><th style="color:#fff;padding:8px 6px;text-align:center;font-size:8px;text-transform:uppercase">Quantity</th><th style="color:#fff;padding:8px 6px;text-align:center;font-size:8px;text-transform:uppercase">Total</th></tr></thead>'
+    +'<tbody>'+tRows+'</tbody>'
+    +'<tfoot><tr style="background:#1a5e1a"><td colspan="2" style="color:#fff;padding:9px 10px;font-weight:700">GRAND TOTAL</td><td></td>'
+    +'<td style="color:#fff;padding:9px 6px;text-align:center;font-weight:700">'+totalTirKg.toLocaleString()+' kg</td>'
+    +'<td style="color:#fff;padding:9px 6px;text-align:center;font-weight:700">'+sym+fmt(grand)+'</td></tr></tfoot>'
+    +'</table></div>'
+    +'<div style="margin:12px 24px;background:#fffdf0;border:1px solid #edd87a;border-radius:6px;padding:9px 12px;font-size:8px;color:#6b4f00;line-height:1.7"><b style="color:#1a5e1a">Important Notice:</b> Prices subject to availability. Please confirm before placing an order.</div>'
+    +'<div style="background:#0d1f0d;color:#7cb87c;text-align:center;padding:8px;font-size:8px">Prices subject to availability | EREN TARIM | www.freshanatolia.com</div>'
+    +'</body></html>';
+  var iframe=document.createElement('iframe');
+  iframe.style.cssText='position:fixed;left:-9999px;top:-9999px;width:210mm;height:297mm;border:none';
+  document.body.appendChild(iframe);
+  var iDoc=iframe.contentDocument||iframe.contentWindow.document;
+  iDoc.open();iDoc.write(html);iDoc.close();
+  setTimeout(function(){iframe.contentWindow.focus();iframe.contentWindow.print();setTimeout(function(){document.body.removeChild(iframe);},2000);el('pdfStatus').textContent='';el('pdfBtn').disabled=false;},800);
+}
+
+// ── ADMIN ──
+function doLogin(){if(val('adminPwd')===ST.settings.pwd){adminOK=true;el('pwdErr').style.display='none';setVal('adminPwd','');renderAdmin();showPage('adminPage',1);}else el('pwdErr').style.display='block';}
+el('adminPwd').onkeydown=function(e){if(e.key==='Enter')doLogin();};
+function doLogout(){adminOK=false;showPage('offerPage',0);}
+function renderAdmin(){setVal('sWeek',ST.settings.week);setVal('sYear',ST.settings.year);setVal('sUSD',ST.settings.usdOverride||'');setVal('sTRY',ST.settings.tryOverride||'');renderAdminProdList();renderAdminFreightList();}
+function saveSettings(){var pw=val('sPwd');ST.settings.week=parseInt(val('sWeek'))||ST.settings.week;ST.settings.year=parseInt(val('sYear'))||ST.settings.year;ST.settings.usdOverride=parseFloat(val('sUSD'))||0;ST.settings.tryOverride=parseFloat(val('sTRY'))||0;if(pw)ST.settings.pwd=pw;if(ST.settings.usdOverride)liveRates.usd=ST.settings.usdOverride;if(ST.settings.tryOverride)liveRates.tryR=ST.settings.tryOverride;saveST();init();showAlert('setAlert','Saved!',true);}
+function doPublish(){var btn=el('publishBtn');btn.textContent='Publishing...';btn.disabled=true;ST.settings.week=parseInt(val('sWeek'))||ST.settings.week;ST.settings.year=parseInt(val('sYear'))||ST.settings.year;saveST();var shared={products:ST.products,freight:ST.freight,settings:{week:ST.settings.week,year:ST.settings.year}};try{window.storage.set('erentarim_shared_v8',JSON.stringify(shared),true).then(function(){btn.textContent='Publish';btn.disabled=false;var now=new Date();showAlert('publishAlert','Published! '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0'),true);init();}).catch(function(){btn.textContent='Publish';btn.disabled=false;showAlert('publishAlert','Error.',false);});}catch(e){btn.textContent='Publish';btn.disabled=false;}}
+el('logoFileInput').onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(ev){var b64=ev.target.result;try{window.storage.set('erentarim_logo',b64).then(function(){LOGO_B64=b64;el('logoPreview').src=b64;showAlert('setAlert','Logo saved!',true);}).catch(function(){});}catch(er){}};rd.readAsDataURL(f);};
+
+function addPkgOption(){var lbl=val('newPkgLabel').trim();if(!lbl){showAlert('pAlert','Label required!',false);return;}var eur=parseFloat(val('newPkgEur'))||0;var usd=parseFloat(val('newPkgUsd'))||0;editPkgOptions.push({label:lbl,extraEUR:eur,extraUSD:usd});setVal('newPkgLabel','');setVal('newPkgEur','');setVal('newPkgUsd','');renderPkgList();}
+function renderPkgList(){var c=el('pkgList');c.innerHTML='';editPkgOptions.forEach(function(pk,i){var tag=mk('span','pkg-tag');tag.innerHTML=pk.label+(pk.extraEUR>0?' +€'+fmt(pk.extraEUR):'')+(pk.extraUSD>0?' +$'+fmt(pk.extraUSD):'');var del=mk('button');del.textContent='×';del.onclick=(function(idx){return function(){editPkgOptions.splice(idx,1);renderPkgList();};})(i);tag.appendChild(del);c.appendChild(tag);});}
+
+function renderAdminProdList(){
+  var c=el('adminProdList');if(!ST.products.length){c.textContent='No products.';return;}
+  var tbl=mkTbl(['Name','Size','EUR/kg','USD/kg','TIR KG','Packaging','Action']);
+  ST.products.forEach(function(p){
+    var tr=mk('tr');
+    [p.name,p.size||'--',fmt(p.price),fmt(p.priceUSD||0),(p.tirKg||0).toLocaleString()+' kg',(p.pkgOptions||[]).map(function(pk){return pk.label+(pk.extraEUR?'+€'+fmt(pk.extraEUR):'');}).join(', ')]
+    .forEach(function(txt,i){var td=mk('td');if(i===0){var b=mk('b');b.textContent=txt;td.appendChild(b);}else td.textContent=txt;tr.appendChild(td);});
+    var acts=mk('td');
+    acts.appendChild(mkBtn('Edit','bgr bsm',function(){editProd(p.id);}));
+    acts.appendChild(document.createTextNode(' '));
+    acts.appendChild(mkBtn('Del','brd bsm',function(){if(confirm('Delete?')){ST.products=ST.products.filter(function(x){return x.id!==p.id;});saveST();renderAdminProdList();}}));
+    tr.appendChild(acts);tbl.querySelector('tbody').appendChild(tr);
+  });
+  c.innerHTML='';var w=mk('div');w.style.overflowX='auto';w.appendChild(tbl);c.appendChild(w);
+}
+function saveProduct(){
+  var id=val('ePid');
+  var obj={id:id||'p'+Date.now(),name:val('pName').trim(),size:val('pSize').trim(),price:parseFloat(val('pEUR'))||0,priceUSD:parseFloat(val('pUSD'))||0,tirKg:parseFloat(val('pTKG'))||0,analysis:parseFloat(val('pAna'))||0,fruitog:parseFloat(val('pFruit'))||450,
+    pkgOptions:editPkgOptions.length?editPkgOptions.map(function(x){return Object.assign({},x);}):[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}]};
+  if(!obj.name){showAlert('pAlert','Name required!',false);return;}
+  if(id){for(var i=0;i<ST.products.length;i++)if(ST.products[i].id===id){ST.products[i]=obj;break;}}else ST.products.push(obj);
+  clrProd();saveST();renderAdminProdList();showAlert('pAlert','Saved!',true);
+}
+function editProd(id){var p=findProd(id);if(!p)return;setVal('ePid',p.id);setVal('pName',p.name||'');setVal('pSize',p.size||'');setVal('pEUR',p.price||'');setVal('pUSD',p.priceUSD||'');setVal('pTKG',p.tirKg||'');setVal('pAna',p.analysis||'');setVal('pFruit',p.fruitog||'');editPkgOptions=(p.pkgOptions||[]).map(function(x){return Object.assign({},x);});renderPkgList();}
+function clrProd(){['ePid','pName','pSize','pEUR','pUSD','pTKG','pAna','pFruit','newPkgLabel','newPkgEur','newPkgUsd'].forEach(function(i){setVal(i,'');});editPkgOptions=[];renderPkgList();}
+
+function renderAdminFreightList(){
+  var c=el('adminFreightList');if(!ST.freight.length){c.textContent='No routes.';return;}
+  var tbl=mkTbl(['Country','City','Mode','Cur','Cost','Max KG','Transit','Action']);
+  ST.freight.forEach(function(f){
+    var tr=mk('tr');
+    [f.country,f.city,String(f.mode||'tir').toUpperCase(),f.currency,(parseFloat(f.cost)||0).toLocaleString(),(parseFloat(f.maxKg)||24000).toLocaleString()+' kg',f.transit]
+    .forEach(function(txt){var td=mk('td');td.textContent=txt;tr.appendChild(td);});
+    var acts=mk('td');
+    acts.appendChild(mkBtn('Edit','bgr bsm',function(){editFreight(f.id);}));
+    acts.appendChild(document.createTextNode(' '));
+    acts.appendChild(mkBtn('Del','brd bsm',function(){if(confirm('Delete?')){ST.freight=ST.freight.filter(function(x){return x.id!==f.id;});saveST();renderAdminFreightList();}}));
+    tr.appendChild(acts);tbl.querySelector('tbody').appendChild(tr);
+  });
+  c.innerHTML='';var w=mk('div');w.style.overflowX='auto';w.appendChild(tbl);c.appendChild(w);
+}
+function saveFreight(){var id=val('eFid');var obj={id:id||'f'+Date.now(),country:val('fCo').trim(),city:val('fCi').trim(),mode:val('fMo'),currency:val('fCur'),cost:parseFloat(val('fCst'))||0,maxKg:parseFloat(val('fMx'))||24000,transit:val('fTr').trim()};if(!obj.country||!obj.city){showAlert('fAlert','Country and city required!',false);return;}if(id){for(var i=0;i<ST.freight.length;i++)if(ST.freight[i].id===id){ST.freight[i]=obj;break;}}else ST.freight.push(obj);clrFreight();saveST();renderAdminFreightList();showAlert('fAlert','Saved!',true);}
+function editFreight(id){var f=ST.freight.find(function(x){return x.id===id;});if(!f)return;setVal('eFid',f.id);setVal('fCo',f.country||'');setVal('fCi',f.city||'');setVal('fMo',f.mode||'tir');setVal('fCur',f.currency||'EUR');setVal('fCst',f.cost||'');setVal('fMx',f.maxKg||'');setVal('fTr',f.transit||'');}
+function clrFreight(){['eFid','fCo','fCi','fCst','fMx','fTr'].forEach(function(i){setVal(i,'');});}
+
+// ── EXCEL IMPORT ──
+el('prodFile').onchange=function(e){if(e.target.files[0])readXL(e.target.files[0],'product');};
+el('freightFile').onchange=function(e){if(e.target.files[0])readXL(e.target.files[0],'freight');};
+function setupDrag(dzId,type){var dz=el(dzId);dz.ondragover=function(e){e.preventDefault();};dz.ondrop=function(e){e.preventDefault();if(e.dataTransfer.files[0])readXL(e.dataTransfer.files[0],type);};}
+setupDrag('prodDZ','product');setupDrag('freightDZ','freight');
+function readXL(file,type){var reader=new FileReader();reader.onload=function(e){var data=new Uint8Array(e.target.result);var wb;try{wb=XLSX.read(data,{type:'array',cellFormula:false,raw:true,sheetStubs:true});}catch(err){wb=XLSX.read(data,{type:'array'});}var wsName=wb.SheetNames[0];var maxC=0;wb.SheetNames.forEach(function(n){var cnt=Object.keys(wb.Sheets[n]||{}).length;if(cnt>maxC){maxC=cnt;wsName=n;}});var ws=wb.Sheets[wsName];if(type==='product'){var res=parseProductWS(ws);if(res.length){pParsed=res;showProdPrev(res);}else showAlert('prodImpAlert','No products found.',false);}else{var raw2=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});el('aiStatus').style.display='block';parseFreightAI(raw2);}};reader.readAsArrayBuffer(file);}
+function normStr(s){return String(s||'').toUpperCase().replace(/İ/g,'I').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ğ/g,'G').replace(/Ö/g,'O').replace(/Ç/g,'C').replace(/\s+/g,' ').trim();}
+function parsePx(v){if(v===null||v===undefined||v==='')return 0;if(typeof v==='number')return isNaN(v)?0:v;var s=String(v).replace(/[A-Za-z\s]/g,'').trim();if(s.indexOf(',')>-1&&s.indexOf('.')>-1){var lc=s.lastIndexOf(','),ld=s.lastIndexOf('.');s=lc>ld?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');}else if(s.indexOf(',')>-1){var pts=s.split(',');s=pts.length===2&&pts[1].length===3?s.replace(',',''):s.replace(',','.');}var n=parseFloat(s);return isNaN(n)?0:n;}
+function getCellVal(ws,r,c){var cell=ws[XLSX.utils.encode_cell({r:r,c:c})];if(!cell)return '';return cell.w!==undefined&&cell.w!==''?cell.w:(cell.v!==undefined?cell.v:'');}
+function parseProductWS(ws){var ref=ws['!ref'];if(!ref)return[];var range=XLSX.utils.decode_range(ref);var mmap={};(ws['!merges']||[]).forEach(function(mg){var sv=getCellVal(ws,mg.s.r,mg.s.c);for(var mr=mg.s.r;mr<=mg.e.r;mr++)for(var mc=mg.s.c;mc<=mg.e.c;mc++)mmap[mr+'_'+mc]=sv;});function gv(r,c){var k=r+'_'+c;return mmap[k]!==undefined?mmap[k]:getCellVal(ws,r,c);}var hRow=-1,cNm=-1,cSz=-1,cEU=-1,cUS=-1,cKG=-1;for(var r=0;r<=Math.min(range.e.r,30);r++){for(var c=range.s.c;c<=Math.min(range.e.c,150);c++){var v=normStr(gv(r,c));if(!v)continue;if(v.indexOf('URUN')>-1&&(v.indexOf('AD')>-1||v.indexOf('ISM')>-1)){hRow=r;cNm=c;}}if(hRow===r){for(var c2=range.s.c;c2<=Math.min(range.e.c,150);c2++){var v2=normStr(gv(r,c2));if(!v2)continue;if(c2!==cNm&&v2==='BOY')cSz=c2;if((v2.indexOf('EURO')>-1||v2==='EUR')&&v2.indexOf('USD')<0&&v2.indexOf('TIR')<0)cEU=c2;if(v2.indexOf('USD')>-1)cUS=c2;if(v2.indexOf('TIR')>-1&&v2.indexOf('KG')>-1)cKG=c2;}break;}}if(hRow<0||cNm<0)return[];var results=[],seen={};for(var row=hRow+1;row<=range.e.r;row++){var nm=String(gv(row,cNm)||'').trim();if(!nm||nm.length<2)continue;var eu=cEU>=0?parsePx(gv(row,cEU)):0,us=cUS>=0?parsePx(gv(row,cUS)):0;if(eu===0&&us===0)continue;var sz=cSz>=0?String(gv(row,cSz)||'').trim():'';var key=normStr(nm)+'__'+normStr(sz);if(seen[key])continue;seen[key]=1;var tirKg=cKG>=0?parsePx(gv(row,cKG)):0;results.push({name:nm,size:sz,priceEUR:eu,priceUSD:us,tirKg:tirKg,analysis:120,fruitog:450,pkgOptions:[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}]});}return results;}
+function showProdPrev(data){var tbl=mkTbl(['Name','Size','EUR/kg','USD/kg','TIR KG']);data.forEach(function(p){var tr=mk('tr');[p.name,p.size||'--',fmt(p.priceEUR),fmt(p.priceUSD),p.tirKg>0?p.tirKg.toLocaleString()+' kg':'--'].forEach(function(txt,i){var td=mk('td');if(i===0){var b=mk('b');b.textContent=txt;td.appendChild(b);}else td.textContent=txt;tr.appendChild(td);});tbl.querySelector('tbody').appendChild(tr);});var wrap=mk('div');wrap.style.maxHeight='200px';wrap.style.overflowY='auto';wrap.appendChild(tbl);var info=mk('div','al ain');info.style.marginTop='8px';info.textContent=data.length+' products found.';el('prodPrev').innerHTML='';el('prodPrev').appendChild(wrap);el('prodPrev').appendChild(info);el('prodImpBtn').style.display='flex';}
+function impProducts(){if(!pParsed)return;ST.products=pParsed.map(function(p,i){return{id:'p'+(Date.now()+i),name:p.name,size:p.size||'',price:p.priceEUR||0,priceUSD:p.priceUSD||0,tirKg:p.tirKg||0,analysis:p.analysis||120,fruitog:p.fruitog||450,pkgOptions:p.pkgOptions||[{label:'Pls Box',extraEUR:0,extraUSD:0},{label:'Ctn Box',extraEUR:0.03,extraUSD:0.04}]};});saveST();renderAdminProdList();clrImport('product');showAlert('prodImpAlert',ST.products.length+' products imported!',true);}
+async function parseFreightAI(rawData){var lines=[];for(var i=0;i<rawData.length&&lines.length<80;i++){var r=rawData[i];if(r.some(function(c){return String(c||'').trim();}))lines.push(r.map(function(c){return String(c||'').trim();}).join('\t'));}var prompt='Freight list. Return JSON array: [{country,city,mode:"tir",currency:"EUR",cost,maxKg:24000,transit}].\n\n'+lines.join('\n');try{var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,system:'JSON array only. No markdown.',messages:[{role:'user',content:prompt}]})});el('aiStatus').style.display='none';var d=await res.json();if(d.error)throw new Error(d.error.message);var raw='';for(var i=0;i<d.content.length;i++){if(d.content[i].type==='text')raw+=d.content[i].text;}raw=raw.replace(/```[a-z]*/gi,'').replace(/```/g,'').trim();var parsed=null;try{parsed=JSON.parse(raw);}catch(e){}if(!Array.isArray(parsed)){var m=raw.match(/\[[\s\S]*\]/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}if(!Array.isArray(parsed)||!parsed.length)throw new Error('No data');parsed.forEach(function(f){f.cost=parseFloat(String(f.cost||'0').replace(/[^\d.]/g,''))||0;f.maxKg=parseFloat(f.maxKg)||24000;f.currency=String(f.currency||'EUR').toUpperCase();});fParsed=parsed;showFreightPrev(parsed);}catch(err){el('aiStatus').style.display='none';showAlert('freightImpAlert','Error: '+err.message,false);}}
+function showFreightPrev(data){var tbl=mkTbl(['Country','City','Cur','Cost','Transit']);data.forEach(function(f){var tr=mk('tr');[f.country,f.city,f.currency,(parseFloat(f.cost)||0).toLocaleString(),f.transit||'--'].forEach(function(txt){var td=mk('td');td.textContent=txt;tr.appendChild(td);});tbl.querySelector('tbody').appendChild(tr);});var wrap=mk('div');wrap.style.maxHeight='200px';wrap.style.overflowY='auto';wrap.appendChild(tbl);var info=mk('div','al ain');info.style.marginTop='8px';info.textContent=data.length+' routes found.';el('freightPrev').innerHTML='';el('freightPrev').appendChild(wrap);el('freightPrev').appendChild(info);el('freightImpBtn').style.display='flex';}
+function impFreight(){if(!fParsed)return;ST.freight=fParsed.map(function(f,i){return{id:'f'+(Date.now()+i),country:f.country||'',city:f.city||'',mode:f.mode||'tir',currency:f.currency||'EUR',cost:f.cost||0,maxKg:f.maxKg||24000,transit:f.transit||'--'};});saveST();renderAdminFreightList();clrImport('freight');showAlert('freightImpAlert',ST.freight.length+' routes imported!',true);}
+function clrImport(type){if(type==='product'){pParsed=null;el('prodPrev').innerHTML='';el('prodImpBtn').style.display='none';setVal('prodFile','');}else{fParsed=null;el('freightPrev').innerHTML='';el('freightImpBtn').style.display='none';setVal('freightFile','');}}
+
+loadST();
+</script>
+</body>
+</html>
